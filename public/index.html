@@ -1,10 +1,19 @@
-import '/style.css'
-
-import * as THREE from '/three'
-
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css">
+    <title>TOXI VR</title>
+  </head>
+  <body>
+    <canvas id="bg"></canvas>
+    <img src="img/persona con casco.png" alt="persona con casco" id="persona" />
+    <script type="module">
+  import * as THREE from 'https://unpkg.com/three@0.126.1/build/three.module.js';
+  import { OrbitControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/controls/OrbitControls.js';
+  import { GLTFLoader } from 'https://unpkg.com/three@0.126.1/examples/jsm/loaders/GLTFLoader.js';
 const scene = new THREE.Scene()
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
@@ -130,3 +139,12 @@ function animate() {
 
 animate()
 
+
+</script>
+
+  <script>
+    
+    </script>  
+  </body>
+  
+</html>
