@@ -129,3 +129,8 @@ function animate() {
 }
 
 animate()
+
+const express = require('express');
+const app = express();
+const port = process.env.PORT || 3000; // Fallback to 3000 if process.env.PORT is not set
+app.listen(port, () => console.log(`Listening on port ${port}`));
