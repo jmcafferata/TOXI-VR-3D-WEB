@@ -1,6 +1,6 @@
-import './style.css'
+import '/style.css'
 
-import * as THREE from 'three'
+import * as THREE from '/three'
 
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
@@ -130,7 +130,3 @@ function animate() {
 
 animate()
 
-const express = require('express');
-const app = express();
-const port = process.env.PORT || 3000; // Fallback to 3000 if process.env.PORT is not set
-app.listen(port, () => console.log(`Listening on port ${port}`));
