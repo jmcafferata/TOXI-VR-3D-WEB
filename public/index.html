@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style.css">
     <title>TOXI VR</title>
   </head>
   <body>
@@ -58,9 +58,10 @@ scene.add(sphere)
 // lighting
 const pointLight = new THREE.PointLight(0xffffff)
 pointLight.position.set(0,5,30)
-pointLight.intensity = 200
+pointLight.intensity = 1
 
 const ambientLight = new THREE.AmbientLight(0xffffff)
+ambientLight.intensity = 100;
 scene.add(pointLight, ambientLight)
 
 let logo;
