@@ -1,0 +1,36 @@
+canvas {
+  position:fixed;
+  top:0;
+  left:0;
+}
+
+canvas:hover {
+  cursor: pointer;
+}
+
+body {
+  background-image: url(img/bg.jpg);
+  background-size: fill
+}
+
+/* centered persona */
+#persona{
+  position: fixed;
+  bottom:0;
+  max-height: 550px;
+  left: calc(50% - 300px);
+  user-select: none;
+}
+
+.menu-title{
+  background-color: black;
+  display: block;
+  position:fixed;
+  top:60vh;
+  color:white;
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 0px 24px;
+  border-radius: 10px;
+  left: 90px;
+}
+
