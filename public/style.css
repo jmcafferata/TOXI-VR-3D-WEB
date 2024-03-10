@@ -17,8 +17,8 @@ body {
 #persona{
   position: fixed;
   bottom:0;
-  max-height: 550px;
-  left: calc(50% - 300px);
+  max-height: 400px;
+  left: calc(50% - 200px);
   user-select: none;
 }
 
