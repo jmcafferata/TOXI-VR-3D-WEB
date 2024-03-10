@@ -10,7 +10,7 @@ canvas:hover {
 
 body {
   background-image: url(img/bg.jpg);
-  background-size: fill
+  background-size: cover
 }
 
 /* centered persona */
