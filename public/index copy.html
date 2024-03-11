@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css">
+  <title>TOXI VR</title>
+</head>
+
+<body>
+  <canvas id="bg"></canvas>
+  <img src="img/persona con casco.png" alt="persona con casco" id="persona" />
+  <script>
+    // make #persona non draggable
+    let persona = document.getElementById('persona')
+    persona.ondragstart = function () { return false; }
+
+
+  </script>
+  <script type="module">
+
+
+    import * as THREE from 'https://unpkg.com/three@0.126.1/build/three.module.js';
+    import { OrbitControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/controls/OrbitControls.js';
+    import { GLTFLoader } from 'https://unpkg.com/three@0.126.1/examples/jsm/loaders/GLTFLoader.js';
+
+    const scene = new THREE.Scene()
+
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
+
+    // limited orbit controls
+    const controls = new OrbitControls(camera, document.querySelector('#bg'))
+    controls.enableDamping = true
+    controls.dampingFactor = 0.90
+    controls.enableZoom = true
+
+    // anti-aliasing
+    const renderer = new THREE.WebGLRenderer({
+      canvas: document.querySelector('#bg'),
+      antialias: false,
+      alpha: true
+    })
+
+    renderer.setPixelRatio(window.devicePixelRatio)
+    renderer.setSize(window.innerWidth, window.innerHeight)
+
+    camera.position.setZ(500)
+
+
+
+    // Rotating sphere
+    const geometry = new THREE.SphereGeometry(64, 16, 16)
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true })
+    const sphere = new THREE.Mesh(geometry, material)
+
+    scene.add(sphere)
+
+
+
+    // TOXI VR LOGO
+    let logo;
+    const loader = new GLTFLoader()
+    loader.load('img/toxilogo.gltf', (gltf) => {
+      // position 
+      gltf.scene.position.set(0, 15, 0)
+      // scale
+      gltf.scene.scale.set(0.2, 0.2, 0.2)
+      scene.add(gltf.scene)
+
+      logo = gltf.scene
+    })
+
+    
+
+
+
+    // LABERINTO
+    const group = new THREE.Group(); // Create the group
+
+    let projectModel; // Keep this declaration at a higher scope to ensure accessibility
+
+    // LABERINTO
+    loader.load('models/laberinto_loRes.glb', (gltf) => {
+      gltf.scene.position.set(0, 0, 0);
+      gltf.scene.scale.set(0.5, 0.5, 0.5);
+
+      group.add(gltf.scene); // Add laberinto to the group
+
+      projectModel = gltf.scene; // Assign the loaded scene to laberinto for later manipulation
+    });
+
+
+    // After loading, add the group to the scene
+    scene.add(group);
+
+
+
+    // LABERINTO LOGO
+    const logoTexture = new THREE.TextureLoader().load('img/formas-logo.png');
+    const projectLogo = new THREE.Mesh(
+      new THREE.PlaneGeometry(30, 30),
+      new THREE.MeshBasicMaterial({ map: logoTexture, transparent: true })
+    );
+
+    // Adjusting forma's scale as needed
+    projectLogo.scale.set(0.3, 0.1, 0.16);
+
+    // Add forma to the same group
+    group.add(projectLogo);
+
+    // move the group to z= 15
+    group.position.set(0, 0, 20)
+    group.scale.set(0.3, 0.3, 0.3)
+
+
+    // same position as laberitno
+    projectLogo.position.set(0, 0, 0)
+    projectLogo.scale.set(0.35, 0.1, 0.16)
+
+    // Then, add the group to the scene
+    scene.add(group);
+
+
+    // Total animation duration in frames (e.g., 60 frames for roughly 1 second at 60fps)
+    const totalFrames = 90;
+    let currentFrame = 0;
+
+    function easeInOutCubic(t) {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+
+    // lighting
+    const pointLight = new THREE.PointLight(0xffffff)
+    pointLight.position.set(0, 6, 2)
+    pointLight.intensity = 3
+
+    const sphereSize = 1;
+    const pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
+    // scene.add( pointLightHelper );
+
+    const ambientLight = new THREE.AmbientLight(0xffffff)
+    ambientLight.intensity = 1;
+    scene.add(pointLight, ambientLight)
+
+    function animate() {
+      requestAnimationFrame(animate)
+
+      if (currentFrame < totalFrames) {
+        // Calculate the progress (0 to 1) over time
+        let progress = currentFrame / totalFrames;
+        // Apply easing
+        let easedProgress = easeInOutCubic(progress);
+        // Interpolate camera position
+        camera.position.z = 500 - (470 * easedProgress); // 500 to 30
+
+        currentFrame++;
+      }
+
+      sphere.rotation.y += 0.0001
+
+      if (logo) {
+        logo.rotation.y += 0.01
+      }
+
+      if (projectModel) {
+        projectModel.rotation.y += 0.001
+      }
+
+      if (projectLogo) {
+        // bob up and down
+        projectLogo.position.y = Math.sin(Date.now() * 0.002) * 0.1 - 3.2
+        // wave left and right rotation
+
+
+
+      }
+
+      window.addEventListener('resize', () => {
+        renderer.setSize(window.innerWidth, window.innerHeight)
+        camera.aspect = window.innerWidth / window.innerHeight
+
+        camera.updateProjectionMatrix()
+      })
+
+      renderer.render(scene, camera)
+    }
+
+    animate()
+
+
+  </script>
+
+  <script>
+
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css">
+  <title>TOXI VR</title>
+</head>
+
+<body>
+  <button id="entrar">ENTRAR</button>
+  <canvas id="bg"></canvas>
+  <img src="img/persona con casco.png" alt="persona con casco" id="persona" />
+  <script>
+    // make #persona non draggable
+    let persona = document.getElementById('persona')
+    persona.ondragstart = function () { return false; }
+
+
+  </script>
+  <script type="module">
+
+    
+
+
+    import * as THREE from 'https://unpkg.com/three@0.126.1/build/three.module.js';
+    import { OrbitControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/controls/OrbitControls.js';
+    import { GLTFLoader } from 'https://unpkg.com/three@0.126.1/examples/jsm/loaders/GLTFLoader.js';
+
+    const scene = new THREE.Scene()
+
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
+
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    function onMouseMove(event) {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+    }
+
+    window.addEventListener('mousemove', onMouseMove, false);
+
+
+
+    // limited orbit controls
+    const controls = new OrbitControls(camera, document.querySelector('#bg'))
+    controls.enableDamping = true
+    controls.dampingFactor = 0.90
+    controls.enableZoom = true
+
+    // anti-aliasing
+    const renderer = new THREE.WebGLRenderer({
+      canvas: document.querySelector('#bg'),
+      antialias: false,
+      alpha: true
+    })
+
+    renderer.setPixelRatio(window.devicePixelRatio)
+    renderer.setSize(window.innerWidth, window.innerHeight)
+
+    camera.position.setZ(500)
+
+
+
+    // Rotating sphere
+    const geometry = new THREE.SphereGeometry(64, 16, 16)
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true })
+    const sphere = new THREE.Mesh(geometry, material)
+
+    scene.add(sphere)
+
+
+
+    // TOXI VR LOGO
+    let logo;
+    const loader = new GLTFLoader()
+
+    loader.load('img/toxilogo.gltf', (gltf) => {
+      // position 
+      gltf.scene.position.set(0, 15, 0)
+      // scale
+      gltf.scene.scale.set(0.2, 0.2, 0.2)
+      scene.add(gltf.scene)
+
+      logo = gltf.scene
+    })
+
+    const centralAxisGroup = new THREE.Group();
+    scene.add(centralAxisGroup);
+    centralAxisGroup.position.z -= 20;
+
+
+
+
+
+
+    // Global array to hold references to all project models and logos
+    const projectsElements = [];
+
+
+    function addProjectToScene(loader, scene, modelName, logoImagePath, index, totalProjects) {
+      const radius = 20;
+      const group = new THREE.Group();
+
+      // Calculate position based on angle
+      const angle = (index / totalProjects) * 2 * Math.PI;
+      const x = radius * Math.cos(angle);
+      const z = radius * Math.sin(angle);
+
+      loader.load(modelName, (gltf) => {
+        gltf.scene.position.set(0, 0, 0);
+        gltf.scene.scale.set(1, 1, 1);
+        group.add(gltf.scene);
+
+        // Load the logo inside the model's load to ensure sequence
+        const logoTexture = new THREE.TextureLoader().load(logoImagePath);
+        const projectLogo = new THREE.Mesh(
+          new THREE.PlaneGeometry(30, 30),
+          new THREE.MeshBasicMaterial({ map: logoTexture, transparent: true })
+        );
+        projectLogo.position.set(0, 0, 0);
+        projectLogo.scale.set(0.8, 0.2, 0.2);
+        group.add(projectLogo);
+
+        // Now we're sure both are loaded
+        projectsElements.push({ model: gltf.scene, logo: projectLogo });
+
+        group.position.set(x, 0, z);
+        group.scale.set(0.6, 0.6, 0.6);
+        scene.add(group);
+        centralAxisGroup.add(group); // Add to the central group instead of scene
+      });
+      
+
+
+
+    }
+
+
+
+
+
+    const projects = [
+      { modelName: 'models/laberinto_loRes.glb', logoImagePath: 'img/formas-logo.png' },
+      { modelName: 'models/ball.glb', logoImagePath: 'img/decabeza-logo.png' },
+      { modelName: 'models/drone.glb', logoImagePath: 'img/drone-logo.png' },
+      { modelName: 'models/telescopio.glb', logoImagePath: 'img/telescopio-logo.png' },
+      // Add more projects as needed
+    ];
+
+    // Add each project to the scene
+    projects.forEach((project, index) => {
+      addProjectToScene(loader, scene, project.modelName, project.logoImagePath, index, projects.length);
+    });
+
+
+
+    
+
+
+
+
+
+
+    // Total animation duration in frames (e.g., 60 frames for roughly 1 second at 60fps)
+    const totalFrames = 600;
+    let currentFrame = 0;
+
+    function easeInOutCubic(t) {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+
+    // lighting
+    const pointLight = new THREE.PointLight(0xffffff)
+    pointLight.position.set(0, 6, 20)
+    pointLight.intensity = 3
+
+    const sphereSize = 1;
+    const pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
+    // scene.add( pointLightHelper );
+
+    const ambientLight = new THREE.AmbientLight(0xffffff)
+    ambientLight.intensity = 1;
+    scene.add(pointLight, ambientLight)
+
+
+    // ANIMATE
+    // ANIMATE
+    // ANIMATE
+    // ANIMATE
+
+    let isHovering = false;
+    let lastIntersectedGroup = null;
+    let targetScale = 1; // Normal scale
+    let currentScale = 1; // Start with the normal scale
+    const scaleUpValue = 1.2; // The scale value when hovered
+
+    
+    function animate() {
+      requestAnimationFrame(animate)
+
+      // Update the raycaster with the camera and mouse position
+      raycaster.setFromCamera(mouse, camera);
+
+      // Calculate objects intersecting the picking ray
+      const intersects = raycaster.intersectObjects(centralAxisGroup.children, true);
+
+      if (intersects.length > 0) {
+        // Mouse is hovering over an object
+        isHovering = true;
+      } else {
+        // Mouse is not hovering over any object
+        isHovering = false;
+      }
+
+      // Rotate central axis group only if not hovering over any object
+      if (!isHovering) {
+        centralAxisGroup.rotation.y += 0.002;
+      }
+
+      if (currentFrame < totalFrames) {
+        // Calculate the progress (0 to 1) over time
+        let progress = currentFrame / totalFrames;
+        // Apply easing
+        let easedProgress = easeInOutCubic(progress);
+        // Interpolate camera position
+        camera.position.z = 500 - (470 * easedProgress); // 500 to 30
+
+        currentFrame++;
+      }
+
+      sphere.rotation.y += 0.0001
+
+      if (logo) {
+        logo.rotation.y += 0.01
+      }
+
+      // Iterate over each project's elements and apply animations
+      projectsElements.forEach(project => {
+        if (project.model) {
+          project.model.rotation.y += 0.001;
+        }
+
+        if (project.logo) {
+          project.logo.position.y = Math.sin(Date.now() * 0.002) * 0.1 - 6.2;
+          project.logo.lookAt(camera.position);
+
+          // Implement additional animations as needed
+        }
+      });
+
+      window.addEventListener('resize', () => {
+        renderer.setSize(window.innerWidth, window.innerHeight)
+        camera.aspect = window.innerWidth / window.innerHeight
+
+        camera.updateProjectionMatrix()
+      })
+
+      renderer.render(scene, camera)
+    }
+
+    let button = document.getElementById('entrar')
+    button.addEventListener('click', () => {
+      // play music toxi vr.ogg
+      let audio = new Audio('toxi vr.ogg')
+      audio.play()
+      // disappear button
+      button.style.display = 'none'
+
+      animate()
+    })
+
+   
+
+
+  </script>
+
+  <script>
+
+  </script>
+</body>
+
+</html>
