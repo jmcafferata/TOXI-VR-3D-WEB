@@ -8,9 +8,12 @@ canvas {
     cursor: pointer;
   }
   
+  /* stretch the bg to the sides */
   body {
     background-image: url(img/bg.jpg);
-    background-size: cover
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
   }
   
   /* centered persona */
@@ -22,6 +25,13 @@ canvas {
     user-select: none;
   }
   
+  /* in phone, the persona is smaller */
+  @media (max-width: 600px) {
+    #persona{
+      max-height: 200px;
+      left: calc(50% - 100px);
+    }
+  }
   .menu-title{
     background-color: black;
     display: block;
