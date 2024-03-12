@@ -12,8 +12,8 @@
 <body>
   <button id="entrar">
     <img src="img/toxi-logo.png" width=50 style="margin-bottom:64px" alt="entrar" id="enter" />
-    <h style="display:flex;text-align:center;margin-top:64px">QUIÉNES SOMOS</h>
-    <p id="descr">
+    <h style="display:flex;text-align:center;margin:64px 0">QUIÉNES SOMOS</h>
+    <p id="descr" style="padding:16px">
       En TOXI VR creamos experiencias de manera personalizada a partir del tratamiento de imágenes, contextos y sonidos
       mediante el uso de herramientas que están a la vanguardia de los avances tecnológicos.
     </p>
@@ -24,7 +24,7 @@
 
   <script>
     // make enter-text change colors in a vaporwave gradient continuously
-    window.onload = function () {
+    document.addEventListener('DOMContentLoaded', function () {
       const descr = document.getElementById('descr');
       let characters = descr.textContent.split('');
       descr.innerHTML = ''; // Clear the initial text
@@ -43,7 +43,8 @@
         enterText.style.display = 'inline-block'; // Make the button visible
         // Start the vaporwave gradient animation here or via CSS as planned
       }, characters.length * 50); // Adjust timing based on the animation duration of descr text
-    };
+    });
+  
 
 
 
@@ -222,8 +223,8 @@
     });
 
     const freeProjects = [
-      { modelName: 'models/molecula.glb', logoImagePath: 'img/ar-logo.png', x: -16, y: -17, z: 0 },
-      { modelName: 'models/molecula.glb', logoImagePath: 'img/contacto.png', x: 16, y: -17, z: 0 }
+      { modelName: 'models/molecula.glb', logoImagePath: 'img/ar-logo.png', x: -12, y: -13, z: 0 },
+      { modelName: 'models/sofi.glb', logoImagePath: 'img/contacto.png', x: 12, y: -13, z: 0 }
 
     ]
 
@@ -240,7 +241,7 @@
 
 
     // Total animation duration in frames (e.g., 60 frames for roughly 1 second at 60fps)
-    const totalFrames = 6;
+    const totalFrames = 600;
     let currentFrame = 0;
 
     function easeInOutCubic(t) {
