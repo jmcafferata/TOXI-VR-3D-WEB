@@ -141,9 +141,13 @@
 
     const centralAxisGroup = new THREE.Group();
     scene.add(centralAxisGroup);
+
+    if (isMobile){
+      centralAxisGroup.position.z -= 15;
+    } else {
     centralAxisGroup.position.z -= 30;
 
-
+    }
 
 
 
@@ -154,8 +158,13 @@
 
     function addProjectToCarousel(loader, scene, modelName, logoImagePath, index, totalProjects) {
 
+        let radius;
       // carousel radius
-      const radius = 30;
+      if (isMobile) {
+         radius = 20;
+      } else {
+         radius = 30;
+      }
       const group = new THREE.Group();
 
       // Calculate position based on angle
@@ -165,7 +174,11 @@
 
       loader.load(modelName, (gltf) => {
         gltf.scene.position.set(0, 0, 0);
+        if (isMobile){
+gltf.scene.scale.set(0.5, 0.5, 0.5);
+        } else {
         gltf.scene.scale.set(1, 1, 1);
+        }
         group.add(gltf.scene);
 
         // Load the logo inside the model's load to ensure sequence
@@ -174,8 +187,13 @@
           new THREE.PlaneGeometry(30, 30),
           new THREE.MeshBasicMaterial({ map: logoTexture, transparent: true })
         );
+        if (isMobile){
+        projectLogo.position.set(0, -5, 0);
+        projectLogo.scale.set(0.68, 0.2, 0.2);
+        } else {
         projectLogo.position.set(0, -5, 0);
         projectLogo.scale.set(0.8, 0.2, 0.2);
+        }
         group.add(projectLogo);
 
         // Now we're sure both are loaded
@@ -264,7 +282,7 @@
 
 
     // Total animation duration in frames (e.g., 60 frames for roughly 1 second at 60fps)
-    const totalFrames = 6;
+    const totalFrames = 600;
     let currentFrame = 0;
 
     function easeInOutCubic(t) {
@@ -283,6 +301,14 @@
     const ambientLight = new THREE.AmbientLight(0xffffff)
     ambientLight.intensity = 1;
     scene.add(pointLight, ambientLight)
+
+    // fog purple #5C0780
+    const color = 0x5C0780;
+    const near = 30;
+    const far = 150;
+
+    scene.fog = new THREE.Fog(color, near, far);
+
 
 
     // ANIMATE
