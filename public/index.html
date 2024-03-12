@@ -12,13 +12,16 @@
 <body>
   <button id="entrar">
     <img src="img/toxi-logo.png" width=50 style="margin-bottom:64px" alt="entrar" id="enter" />
-    <h style="display:flex;text-align:center;margin:64px 0">QUIÉNES SOMOS</h>
     <p id="descr" style="padding:16px">
       En TOXI VR creamos experiencias de manera personalizada a partir del tratamiento de imágenes, contextos y sonidos
       mediante el uso de herramientas que están a la vanguardia de los avances tecnológicos.
     </p>
     <br>
-    <span id="enter-text">MIRÁ NUESTROS PROYECTOS</span>
+    <script>
+      let userAudioChoice = false;
+    </script>
+    <span class="enter-text" onclick="userAudioChoice = true">ENTRAR CON MÚSICA</span>
+    <span class="enter-text">ENTRAR SIN MÚSICA</span>
   </button>
 
 
@@ -33,16 +36,18 @@
       characters.forEach((char, index) => {
         let span = document.createElement('span');
         span.textContent = char;
-        span.style.animationDelay = `${index * 0.05}s`; // Adjust time for sequential fade-in
+        span.style.animationDelay = `${index * 0.01}s`; // Adjust time for sequential fade-in
         descr.appendChild(span);
       });
 
-      // Show the enter-text button with a delay based on the descr animation
+      // Show the .enter-text buttons with a delay based on the descr animation
       setTimeout(() => {
-        const enterText = document.getElementById('enter-text');
-        enterText.style.display = 'inline-block'; // Make the button visible
-        // Start the vaporwave gradient animation here or via CSS as planned
-      }, characters.length * 50); // Adjust timing based on the animation duration of descr text
+        document.querySelectorAll('.enter-text').forEach((button, index) => {
+          button.style.animationDelay = `${index * 0.5}s`; // Adjust time for sequential fade-in
+          button.style.display = 'block';
+        });
+
+      }, 3000); // Adjust timing based on the animation duration of descr text
     });
 
 
@@ -69,6 +74,9 @@
     import * as THREE from 'https://unpkg.com/three@0.126.1/build/three.module.js';
     import { OrbitControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/controls/OrbitControls.js';
     import { GLTFLoader } from 'https://unpkg.com/three@0.126.1/examples/jsm/loaders/GLTFLoader.js';
+    import { VRButton } from 'https://unpkg.com/three@0.126.1/examples/jsm/webxr/VRButton.js';
+
+
 
     const scene = new THREE.Scene()
 
@@ -94,7 +102,8 @@
       isMobile = false;
     }
 
-    window.addEventListener('mousemove', onMouseMove, false);
+
+
 
 
 
@@ -108,15 +117,20 @@
     const renderer = new THREE.WebGLRenderer({
       canvas: document.querySelector('#bg'),
       antialias: false,
-      alpha: true
+      alpha: true,
+
     })
 
     renderer.setPixelRatio(window.devicePixelRatio)
     renderer.setSize(window.innerWidth, window.innerHeight)
-
+    renderer.xr.enabled = true;
     camera.position.setZ(500)
 
-
+    // Check if the browser is Oculus Quest browser
+    if (navigator.userAgent.includes('OculusBrowser')) {
+      // Append the VR button for VR mode
+      document.body.appendChild(VRButton.createButton(renderer));
+    }
 
     // Rotating sphere
     const geometry = new THREE.SphereGeometry(64, 16, 16)
@@ -163,6 +177,7 @@
       let radius = isMobile ? 20 : 30;
       const group = new THREE.Group();
       group.name = "projectGroup"
+      group.url = project.url;
 
       // add transparent sphere for selecting the group
       const sphere = new THREE.Mesh(
@@ -208,7 +223,7 @@
       const group = new THREE.Group();
       group.name = "projectGroup"
       group.position.set(isMobile ? project.x : project.x * 1.3, isMobile ? project.y - 2 : project.y - 3, project.z);
-
+      group.url = project.url;
       scene.add(group);
 
       // add transparent sphere for selecting the group
@@ -232,7 +247,7 @@
 
         // Adjust positions to be relative to the group
         const positionScale = isMobile ? 1.0 : 1.3;
-        const scale = isMobile ? 0.6 : 0.7;
+        const scale = isMobile ? 0.6 : 1.3;
         model.position.set(0, 0, 0); // Model's position is now relative to the group
         model.scale.set(scale, scale, scale);
         group.add(model); // Add model to the group
@@ -241,9 +256,9 @@
       });
 
       // Adjust the logo's position to be relative to the group
-      const logoScale = isMobile ? 0.4 : 0.4;
-      projectLogo.position.set(0, isMobile ? -2.5 : -3, 0); // Logo's position is now relative to the group
-      projectLogo.scale.set(logoScale, 0.08, 0.1);
+
+      projectLogo.position.set(0, isMobile ? -2.5 : -5, 0); // Logo's position is now relative to the group
+      projectLogo.scale.set(isMobile ? 0.4 : 0.6, isMobile ? 0.08 : 0.12, 0.1);
       group.add(projectLogo); // Add logo to the group
 
       // Add the group to the array of project groups
@@ -259,8 +274,8 @@
     const carouselProjects = [
       { modelName: 'models/laberinto_loRes.glb', logoImagePath: 'img/formas-logo.png', url: 'https://www.youtube.com/watch?v=v4nQqkqNFoY' },
       { modelName: 'models/ball.glb', logoImagePath: 'img/decabeza-logo.png', url: 'https://www.youtube.com/watch?v=v4nQqkqNFoY' },
-      { modelName: 'models/drone.glb', logoImagePath: 'img/drone-logo.png', url: 'https://www.youtube.com/watch?v=v4nQqkqNFoY' },
-      { modelName: 'models/telescopio.glb', logoImagePath: 'img/telescopio-logo.png', url: 'https://www.youtube.com/watch?v=v4nQqkqNFoY' },
+      { modelName: 'models/drone.glb', logoImagePath: 'img/drone-logo.png', url: 'https://www.youtube.com/watch?v=VQ9wXgqQ3Kk' },
+      { modelName: 'models/telescopio.glb', logoImagePath: 'img/telescopio-logo.png', url: 'https://www.youtube.com/shorts/oub0bxZYz1w' },
       // Add more projects as needed
     ];
 
@@ -272,7 +287,7 @@
 
     const freeProjects = [
       { modelName: 'models/molecula.glb', logoImagePath: 'img/ar-logo.png', x: -12, y: -13, z: 0, url: 'https://www.youtube.com/watch?v=v4nQqkqNFoY' },
-      { modelName: 'models/sofi.glb', logoImagePath: 'img/contacto.png', x: 12, y: -13, z: 0, url: 'https://www.youtube.com/watch?v=v4nQqkqNFoY' }
+      { modelName: 'models/sofi.glb', logoImagePath: 'img/contacto.png', x: 12, y: -13, z: 0, url: 'https://wa.me/5491159571452' }
 
     ]
 
@@ -292,7 +307,7 @@
 
 
     // Total animation duration in frames (e.g., 60 frames for roughly 1 second at 60fps)
-    const totalFrames = 6;
+    const totalFrames = 600;
     let currentFrame = 0;
 
     function easeInOutCubic(t) {
@@ -331,6 +346,7 @@
 
     function getIntersectedGroup(raycaster, scene, groupName) {
       const intersects = raycaster.intersectObjects(scene.children, true); // true for recursive search
+
       if (intersects.length > 0) {
         for (let i = 0; i < intersects.length; i++) {
           let object = intersects[i].object;
@@ -356,6 +372,7 @@
       // Assuming 'scene' is your THREE.Scene instance and 'camera' is your THREE.Camera
       const intersectedGroup = getIntersectedGroup(raycaster, scene, "projectGroup");
       if (intersectedGroup !== null) {
+        intersectedObject = intersectedGroup;
         console.log("Intersected group:", intersectedGroup);
         // make cursor pointer
         document.querySelector('#bg').style.cursor = 'pointer';
@@ -422,23 +439,32 @@
       renderer.render(scene, camera)
     }
 
+    let sonidoControles = document.getElementById('sonido-controles')
     let audio = new Audio('toxi vr.ogg')
 
     let button = document.getElementById('entrar')
     button.addEventListener('click', () => {
+
       // play music toxi vr.ogg
-      audio.play()
+      if (userAudioChoice) {
+        audio.play()
+
+
+      } else {
+        sonidoControles.src = 'img/prender.png'
+      }
       // disappear button
       button.style.display = 'none'
 
       animate()
     })
+    window.addEventListener('mousemove', onMouseMove, false);
 
-    let sonidoControles = document.getElementById('sonido-controles')
     sonidoControles.addEventListener('click', () => {
-      if (audio.paused) {
+      if (audio.paused || !userAudioChoice) {
         audio.play()
         sonidoControles.src = 'img/apagar.png'
+        userAudioChoice = true;
       } else {
         audio.pause()
         sonidoControles.src = 'img/prender.png'
@@ -446,11 +472,21 @@
     })
 
 
+
+    let timerPassed = false;
+
     window.addEventListener('click', () => {
-      if (intersectedObject) {
-        console.log(intersectedObject);
+      setTimeout(() => {
+        timerPassed = true;
+      }, 1000);
+      // open the url of the intersected group if it exists
+      if (intersectedObject && timerPassed) {
+        if (intersectedObject.url) {
+          console.log("Opening URL:", intersectedObject.url);
+          window.open(intersectedObject.url, '_blank');
+        }
       }
-    });
+    })
 
 
 
