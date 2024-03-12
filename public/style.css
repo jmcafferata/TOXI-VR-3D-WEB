@@ -4,9 +4,6 @@ canvas {
   left: 0;
 }
 
-canvas:hover {
-  cursor: pointer;
-}
 
 /* stretch the bg to the sides */
 body {
