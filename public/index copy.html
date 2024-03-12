@@ -62,17 +62,20 @@
     // TOXI VR LOGO
     let logo;
     const loader = new GLTFLoader()
-    loader.load('img/toxilogo.gltf', (gltf) => {
+    loader.load('models/toxi-logo.gltf', (gltf) => {
       // position 
       gltf.scene.position.set(0, 15, 0)
-      // scale
-      gltf.scene.scale.set(0.2, 0.2, 0.2)
+
+      gltf.scene.scale.set(2, 2, 2); // Adjust these values to scale up
+
       scene.add(gltf.scene)
 
       logo = gltf.scene
     })
 
-    
+
+
+
 
 
 

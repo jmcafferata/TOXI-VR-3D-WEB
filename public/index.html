@@ -10,8 +10,48 @@
 </head>
 
 <body>
-  <button id="entrar">ENTRAR</button>
+  <button id="entrar">
+    <img src="img/toxi-logo.png" width=50 style="margin-bottom:64px" alt="entrar" id="enter" />
+    <h style="display:flex;text-align:center;margin-top:64px">QUIÉNES SOMOS</h>
+    <p id="descr">
+      En TOXI VR creamos experiencias de manera personalizada a partir del tratamiento de imágenes, contextos y sonidos
+      mediante el uso de herramientas que están a la vanguardia de los avances tecnológicos.
+    </p>
+    <br>
+    <span id="enter-text">MIRÁ NUESTROS PROYECTOS</span>
+  </button>
+
+
+  <script>
+    // make enter-text change colors in a vaporwave gradient continuously
+    window.onload = function () {
+      const descr = document.getElementById('descr');
+      let characters = descr.textContent.split('');
+      descr.innerHTML = ''; // Clear the initial text
+      descr.style.display = 'block'; // Make the container visible before animation
+
+      characters.forEach((char, index) => {
+        let span = document.createElement('span');
+        span.textContent = char;
+        span.style.animationDelay = `${index * 0.05}s`; // Adjust time for sequential fade-in
+        descr.appendChild(span);
+      });
+
+      // Show the enter-text button with a delay based on the descr animation
+      setTimeout(() => {
+        const enterText = document.getElementById('enter-text');
+        enterText.style.display = 'inline-block'; // Make the button visible
+        // Start the vaporwave gradient animation here or via CSS as planned
+      }, characters.length * 50); // Adjust timing based on the animation duration of descr text
+    };
+
+
+
+  </script>
   <canvas id="bg"></canvas>
+
+  <img src="img/apagar.png" id="sonido-controles">
+
   <img src="img/persona con casco.png" alt="persona con casco" id="persona" />
   <script>
     // make #persona non draggable
@@ -22,7 +62,7 @@
   </script>
   <script type="module">
 
-    
+
 
 
     import * as THREE from 'https://unpkg.com/three@0.126.1/build/three.module.js';
@@ -80,9 +120,9 @@
 
     loader.load('img/toxilogo.gltf', (gltf) => {
       // position 
-      gltf.scene.position.set(0, 15, 0)
+      gltf.scene.position.set(0, 32, -30)
       // scale
-      gltf.scene.scale.set(0.2, 0.2, 0.2)
+      gltf.scene.scale.set(0.6, 0.6, 0.6)
       scene.add(gltf.scene)
 
       logo = gltf.scene
@@ -101,7 +141,9 @@
     const projectsElements = [];
 
 
-    function addProjectToScene(loader, scene, modelName, logoImagePath, index, totalProjects) {
+    function addProjectToCarousel(loader, scene, modelName, logoImagePath, index, totalProjects) {
+
+      // carousel radius
       const radius = 20;
       const group = new THREE.Group();
 
@@ -121,7 +163,7 @@
           new THREE.PlaneGeometry(30, 30),
           new THREE.MeshBasicMaterial({ map: logoTexture, transparent: true })
         );
-        projectLogo.position.set(0, 0, 0);
+        projectLogo.position.set(0, -5, 0);
         projectLogo.scale.set(0.8, 0.2, 0.2);
         group.add(projectLogo);
 
@@ -133,7 +175,30 @@
         scene.add(group);
         centralAxisGroup.add(group); // Add to the central group instead of scene
       });
-      
+
+
+
+
+    }
+
+    function addProjectToScene(loader, scene, modelName, logoImagePath, x, y, z) {
+
+      const logoTexture = new THREE.TextureLoader().load(logoImagePath);
+      const projectLogo = new THREE.Mesh(
+        new THREE.PlaneGeometry(30, 30),
+        new THREE.MeshBasicMaterial({ map: logoTexture, transparent: true })
+      );
+
+      loader.load(modelName, (gltf) => {
+        gltf.scene.position.set(x, y, z);
+        gltf.scene.scale.set(0.7, 0.7, 0.7)
+        scene.add(gltf.scene);
+        projectsElements.push({ model: gltf.scene, logo: projectLogo });
+      });
+      projectLogo.position.set(x, y - 3, z);
+      projectLogo.scale.set(0.4, 0.08, 0.1);
+      scene.add(projectLogo);
+
 
 
 
@@ -143,7 +208,7 @@
 
 
 
-    const projects = [
+    const carouselProjects = [
       { modelName: 'models/laberinto_loRes.glb', logoImagePath: 'img/formas-logo.png' },
       { modelName: 'models/ball.glb', logoImagePath: 'img/decabeza-logo.png' },
       { modelName: 'models/drone.glb', logoImagePath: 'img/drone-logo.png' },
@@ -152,13 +217,22 @@
     ];
 
     // Add each project to the scene
-    projects.forEach((project, index) => {
-      addProjectToScene(loader, scene, project.modelName, project.logoImagePath, index, projects.length);
+    carouselProjects.forEach((project, index) => {
+      addProjectToCarousel(loader, scene, project.modelName, project.logoImagePath, index, carouselProjects.length);
     });
 
+    const freeProjects = [
+      { modelName: 'models/molecula.glb', logoImagePath: 'img/ar-logo.png', x: -16, y: -17, z: 0 },
+      { modelName: 'models/molecula.glb', logoImagePath: 'img/contacto.png', x: 16, y: -17, z: 0 }
+
+    ]
+
+    freeProjects.forEach((project) => {
+      addProjectToScene(loader, scene, project.modelName, project.logoImagePath, project.x, project.y, project.z)
+    })
 
 
-    
+
 
 
 
@@ -166,7 +240,7 @@
 
 
     // Total animation duration in frames (e.g., 60 frames for roughly 1 second at 60fps)
-    const totalFrames = 600;
+    const totalFrames = 6;
     let currentFrame = 0;
 
     function easeInOutCubic(t) {
@@ -176,7 +250,7 @@
     // lighting
     const pointLight = new THREE.PointLight(0xffffff)
     pointLight.position.set(0, 6, 20)
-    pointLight.intensity = 3
+    pointLight.intensity = 2
 
     const sphereSize = 1;
     const pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
@@ -192,33 +266,10 @@
     // ANIMATE
     // ANIMATE
 
-    let isHovering = false;
-    let lastIntersectedGroup = null;
-    let targetScale = 1; // Normal scale
-    let currentScale = 1; // Start with the normal scale
-    const scaleUpValue = 1.2; // The scale value when hovered
 
-    
     function animate() {
       requestAnimationFrame(animate)
 
-      // Update the raycaster with the camera and mouse position
-      raycaster.setFromCamera(mouse, camera);
-
-      // Calculate objects intersecting the picking ray
-      const intersects = raycaster.intersectObjects(centralAxisGroup.children, true);
-
-      if (intersects.length > 0) {
-        // Mouse is hovering over an object
-        isHovering = true;
-      } else {
-        // Mouse is not hovering over any object
-        isHovering = false;
-      }
-
-      // Rotate central axis group only if not hovering over any object
-      if (!isHovering) {
-      }
       centralAxisGroup.rotation.y += 0.002;
 
       if (currentFrame < totalFrames) {
@@ -232,6 +283,7 @@
         currentFrame++;
       }
 
+
       sphere.rotation.y += 0.0001
 
       if (logo) {
@@ -241,11 +293,10 @@
       // Iterate over each project's elements and apply animations
       projectsElements.forEach(project => {
         if (project.model) {
-          project.model.rotation.y += 0.001;
+          project.model.rotation.y += 0.01;
         }
 
         if (project.logo) {
-          project.logo.position.y = Math.sin(Date.now() * 0.002) * 0.1 - 6.2;
           project.logo.lookAt(camera.position);
 
           // Implement additional animations as needed
@@ -262,10 +313,11 @@
       renderer.render(scene, camera)
     }
 
+    let audio = new Audio('toxi vr.ogg')
+
     let button = document.getElementById('entrar')
     button.addEventListener('click', () => {
       // play music toxi vr.ogg
-      let audio = new Audio('toxi vr.ogg')
       audio.play()
       // disappear button
       button.style.display = 'none'
@@ -273,14 +325,25 @@
       animate()
     })
 
-   
+    let sonidoControles = document.getElementById('sonido-controles')
+    sonidoControles.addEventListener('click', () => {
+      if (audio.paused) {
+        audio.play()
+        sonidoControles.src = 'img/apagar.png'
+      } else {
+        audio.pause()
+        sonidoControles.src = 'img/prender.png'
+      }
+    })
+
+
+
+
+
 
 
   </script>
 
-  <script>
-
-  </script>
 </body>
 
 </html>
