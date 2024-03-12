@@ -12,6 +12,6 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(port, () => {
-  console.log(`Server listening on http://localhost:${port}`);
+app.listen(3000, '0.0.0.0', () => {
+  console.log('Server is running on http://0.0.0.0:3000');
 });

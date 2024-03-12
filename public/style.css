@@ -109,6 +109,10 @@ body {
   margin-top: 16px;
 }
 
+#log{
+  display: none;
+}
+
 /* Vaporwave gradient keyframes */
 @keyframes vaporwaveFade {
   0% {
