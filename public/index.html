@@ -44,7 +44,7 @@
         // Start the vaporwave gradient animation here or via CSS as planned
       }, characters.length * 50); // Adjust timing based on the animation duration of descr text
     });
-  
+
 
 
 
@@ -81,6 +81,16 @@
       mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
     }
+
+    let isMobile;
+
+    if (window.innerWidth < 768) {
+      isMobile = true;
+    } else {
+      isMobile = false;
+    }
+
+    console.log(isMobile);
 
     ///window.addEventListener('mousemove', onMouseMove, false);
 
@@ -131,7 +141,7 @@
 
     const centralAxisGroup = new THREE.Group();
     scene.add(centralAxisGroup);
-    centralAxisGroup.position.z -= 20;
+    centralAxisGroup.position.z -= 30;
 
 
 
@@ -145,7 +155,7 @@
     function addProjectToCarousel(loader, scene, modelName, logoImagePath, index, totalProjects) {
 
       // carousel radius
-      const radius = 20;
+      const radius = 30;
       const group = new THREE.Group();
 
       // Calculate position based on angle
@@ -191,13 +201,25 @@
       );
 
       loader.load(modelName, (gltf) => {
-        gltf.scene.position.set(x, y, z);
-        gltf.scene.scale.set(0.7, 0.7, 0.7)
+        if (isMobile) {
+          gltf.scene.position.set(x/1.3, y, z);
+          gltf.scene.scale.set(0.6, 0.6, 0.6)
+        } else {
+          gltf.scene.position.set(x*1.3, y-3, z);
+          gltf.scene.scale.set(0.7, 0.7, 0.7)
+        }
         scene.add(gltf.scene);
         projectsElements.push({ model: gltf.scene, logo: projectLogo });
       });
-      projectLogo.position.set(x, y - 3, z);
-      projectLogo.scale.set(0.4, 0.08, 0.1);
+      if (isMobile) {
+        projectLogo.scale.set(0.3, 0.05, 0.1);
+        projectLogo.position.set(x/1.3, y - 2, z);
+
+      } else {
+        projectLogo.scale.set(0.4, 0.08, 0.1);
+        projectLogo.position.set(x*1.3, y - 6, z);
+
+      }
       scene.add(projectLogo);
 
 
@@ -222,6 +244,7 @@
       addProjectToCarousel(loader, scene, project.modelName, project.logoImagePath, index, carouselProjects.length);
     });
 
+
     const freeProjects = [
       { modelName: 'models/molecula.glb', logoImagePath: 'img/ar-logo.png', x: -12, y: -13, z: 0 },
       { modelName: 'models/sofi.glb', logoImagePath: 'img/contacto.png', x: 12, y: -13, z: 0 }
@@ -241,7 +264,7 @@
 
 
     // Total animation duration in frames (e.g., 60 frames for roughly 1 second at 60fps)
-    const totalFrames = 600;
+    const totalFrames = 6;
     let currentFrame = 0;
 
     function easeInOutCubic(t) {
