@@ -77,6 +77,11 @@
     let persona = document.getElementById('persona')
     persona.ondragstart = function () { return false; }
 
+    // persona onclick open https://youtu.be/eLxBUrssRAU
+    persona.addEventListener('click', () => {
+      window.open('https://youtu.be/eLxBUrssRAU', '_blank')
+    })
+
 
   </script>
   <script type="module">
@@ -294,7 +299,7 @@
 
     const carouselProjects = [
       { modelName: 'models/laberinto_loRes.glb', logoImagePath: 'img/formas-logo.png', url: 'https://drive.google.com/file/d/1jp6V7lRP7zxkZnXCAV0rI0cZTZBYyFJR/view' },
-      { modelName: 'models/ball.glb', logoImagePath: 'img/decabeza-logo.png', url: 'https://youtube.com/shorts/Wqw_WC2yZ_4?feature=share' },
+      { modelName: 'models/ball.glb', logoImagePath: 'img/decabeza-logo.png', url: 'https://youtu.be/Wq_amjpFNiU' },
       { modelName: 'models/drone.glb', logoImagePath: 'img/drone-logo.png', url: 'https://www.youtube.com/watch?v=VQ9wXgqQ3Kk' },
       { modelName: 'models/telescopio.glb', logoImagePath: 'img/telescopio-logo.png', url: 'https://www.youtube.com/shorts/oub0bxZYz1w' },
       // Add more projects as needed
@@ -406,6 +411,12 @@
 
     }
 
+    function handleIntersectDelayed(x, y) {
+      setTimeout(() => {
+        handleIntersect(x, y);
+      }, 300); // Adjust delay as needed
+    }
+
 
 
 
@@ -422,18 +433,18 @@
 
 
 
-if (!isMobile){
-      // Iterate over each project group and check if they are intersected
-      projectGroups.forEach(group => {
-        if (group === intersectedGroup) {
-          // Handle the intersected group as needed
-          group.scale.set(1.2, 1.2, 1.2);
-        } else {
-          group.scale.set(0.7, 0.7, 0.7);
-        }
-      });
+      if (!isMobile) {
+        // Iterate over each project group and check if they are intersected
+        projectGroups.forEach(group => {
+          if (group === intersectedGroup) {
+            // Handle the intersected group as needed
+            group.scale.set(1.2, 1.2, 1.2);
+          } else {
+            group.scale.set(0.7, 0.7, 0.7);
+          }
+        });
 
-    }
+      }
       centralAxisGroup.rotation.y += 0.002;
 
       if (currentFrame < totalFrames) {
@@ -518,6 +529,7 @@ if (!isMobile){
     })
 
 
+    let isDragging = false;
 
     // Listen for touch events
     window.addEventListener('touchstart', (event) => {
@@ -526,9 +538,21 @@ if (!isMobile){
       }
       if (event.touches.length > 0) {
         const touch = event.touches[0];
-        handleIntersect(touch.clientX, touch.clientY);
+        if (!isDragging) {
+          handleIntersectDelayed(touch.clientX, touch.clientY);
+        }
       }
     }, { passive: false }); // Use passive: false to allow preventDefault
+
+    // Listen for touch move events to detect camera dragging
+    window.addEventListener('touchmove', () => {
+      isDragging = true;
+    });
+
+    // Listen for touch end events to detect when dragging stops
+    window.addEventListener('touchend', () => {
+      isDragging = false;
+    });
 
     // Listen for click events
     window.addEventListener('click', (event) => {
